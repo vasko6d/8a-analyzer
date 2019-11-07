@@ -63,6 +63,10 @@ headers = {
 }
 
 
+def standardizeAreaName(name):
+    return re.sub("\s+", "_", name.strip().upper())
+
+
 def scrapeBoulderScorecare(a8URL):
     # Get the raw HTML for the specified URL and return it as a bs4 soup object
     print("Starting 8a scrape")
@@ -116,16 +120,20 @@ def processAscent(htmlRow):
             # [4] - Area and sub area
             rawStr = tds[4].span.text
             rawArr = rawStr.split("/", 1)
-            ascent["area"] = rawArr[0].strip()
+            ascent["area"] = standardizeAreaName(rawArr[0])
             if len(rawArr) == 2:
-                ascent["subArea"] = rawArr[1].strip()
+                ascent["subArea"] = standardizeAreaName(rawArr[1])
 
             # [5] - Flags
             rawStr = tds[5].contents[0]
             rawArr = rawStr.split(",")
             ascent["flags"] = []
             for el in rawArr:
-                ascent["flags"].append(el.strip())
+                if el.strip():
+                    ascent["flags"].append(el.strip())
+            # also add flash or onsigth as flag
+            if ascent["type"] == "flash" or ascent["type"] == "onsite":
+                ascent["flags"].append(ascent["type"])
 
             # [6] - Comment (first remove the starting span)
             raw = str(tds[6])
@@ -138,6 +146,7 @@ def processAscent(htmlRow):
                 comment = comment.replace(spaceStr, "")
             comment = comment.replace("\n<br/>", "").rstrip()
             ascent["comment"] = comment
+            ascent["commentLength"] = len(comment)
 
             # [7] - Stars
             rawStr = tds[7].contents[0]
