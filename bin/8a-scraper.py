@@ -21,20 +21,29 @@ my8aURL = "https://www.8a.nu/scorecard/david-vasko/boulders/?AscentClass=0&Ascen
 ascentStartMarker = "<!-- Ascents -->"
 ascentEndMarker = "</table>"
 currentGradeMap = {
+    "A8_8a2f2ba201c69c72f5fae6d5b490ca31()": "15",
+    "A8_371ada172e6aca6d36030cff991c2110()": "14",
+    "A8_70ae3987db297649adfa22ec835bbef5()": "13",
+    "A8_f94c1a7c1ade88cfeb2bd73ffa116d9f()": "12",
+    "A8_59b85d692c593f314ed49d15870ff8d2()": "11",
     "A8_ea3a0c3e0e84736e61d7b4ae4aa07145()": "10",
     "A8_2d8a2dca8da8f8595bfafa25580f88c4()": "9",
     "A8_ebe1c7b6a0324f26fa1203e423827d73()": "8",
     "A8_a3ef9ab41d342fca7c6d3bf3b2e01ca2()": "7/8",
     "A8_b68c76e55910e67faca8829b4700d2e1()": "7",
     "A8_728a1685254b76fb0532dd2bd83fc670()": "6",
+    "A8_323b60c5b47a45c73f666867fd27b319()": "5/6",
     "A8_59ed716391fbf46727ad091b93b1b507()": "5",
+    "A8_8e761f5120d8a81b268c721eb940f633()": "4/5",
     "A8_4b0680d2e6545260c512c8424e7d0180()": "4",
+    "A8_31d055ac30224e9cb434b74b6f77c9fe()": "3/4",
     "A8_3cd6d35aa8f427f02d106c1c40969227()": "3",
     "A8_b69a020c915c748aba94ed6c86226541()": "2",
     "A8_10d988d607dfa42c867b638336965a99()": "1",
     "A8_217b0d256645bca88490d2f8257ffecd()": "0",
     "A8_027540acd8eb24681172603ebf359a5c()": "B",
-    "A8_5e6e11644ad74bc7fa3554dc12d16d5d()": "B"
+    "A8_5e6e11644ad74bc7fa3554dc12d16d5d()": "B",
+    "A8_d02544d610dbfd7bb34cb85ff612365c()": "B"
 
 }
 currentAscentTypeMap = {
@@ -85,7 +94,7 @@ def scrapeBoulderScorecare(a8URL):
 
 
 def processAscent(htmlRow):
-    tds = row.find_all("td")
+    tds = htmlRow.find_all("td")
 
     # Specify a minimum length to omit junk(empty) rows
     if len(tds) > 2:
@@ -93,15 +102,8 @@ def processAscent(htmlRow):
             ascent = {}
 
             # [0] - Date
-            rawStr = tds[0].find("nobr")
-            if rawStr.find("i"):
-                # most are wrapped in an <i></i>
-                rawStr = rawStr.i.string.strip()
-            elif rawStr.find("b"):
-                # most are wrapped in an <b></b>
-                rawStr = rawStr.b.string.strip()
-            else:
-                rawStr = rawStr.string.strip()
+            rawStr = tds[0].text
+            rawStr = rawStr[len(rawStr)-8:]
             date = datetime.datetime.strptime(rawStr, "%y-%m-%d")
             ascent["date"] = date
 
@@ -118,7 +120,7 @@ def processAscent(htmlRow):
             ascent["recommend"] = recommendMap[rawStr]
 
             # [4] - Area and sub area
-            rawStr = tds[4].span.text
+            rawStr = tds[4].text
             rawArr = rawStr.split("/", 1)
             ascent["area"] = standardizeAreaName(rawArr[0])
             if len(rawArr) == 2:
