@@ -1,4 +1,5 @@
 *.out
-*.html
 *.json
 *.csv
+*.html
+html/*.*
