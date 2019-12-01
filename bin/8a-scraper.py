@@ -148,7 +148,6 @@ def processAscent(htmlRow):
                 comment = comment.replace(spaceStr, "")
             comment = comment.replace("\n<br/>", "").rstrip()
             ascent["comment"] = comment
-            ascent["commentLength"] = len(comment)
 
             # [7] - Stars
             rawStr = tds[7].contents[0]
