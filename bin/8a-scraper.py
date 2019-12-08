@@ -6,74 +6,31 @@ import re
 import os.path
 import json
 import argparse
+from vars import currentGradeMap, currentAscentTypeMap, recommendMap, areaMaps, headers, ascentStartMarker, ascentEndMarker, stateEquivalences
 
 # Helpful Google Links:
 # https://stackoverflow.com/questions/34573605/python-requests-get-returns-an-empty-string?rq=1
 # https://www.geeksforgeeks.org/implementing-web-scraping-python-beautiful-soup/
 # https://www.edureka.co/blog/web-scraping-with-python/
 
-# Personal 8a Link
-my8aURL = "https://www.8a.nu/scorecard/david-vasko/boulders/?AscentClass=0&AscentListViewType=0&GID=d96e250ee9136da4105514a70e6e38e8"
-
-#
-# 8a Specific Scraping Variables (high chance of changing)
-#
-ascentStartMarker = "<!-- Ascents -->"
-ascentEndMarker = "</table>"
-currentGradeMap = {
-    "A8_8a2f2ba201c69c72f5fae6d5b490ca31()": "15",
-    "A8_371ada172e6aca6d36030cff991c2110()": "14",
-    "A8_70ae3987db297649adfa22ec835bbef5()": "13",
-    "A8_f94c1a7c1ade88cfeb2bd73ffa116d9f()": "12",
-    "A8_59b85d692c593f314ed49d15870ff8d2()": "11",
-    "A8_ea3a0c3e0e84736e61d7b4ae4aa07145()": "10",
-    "A8_2d8a2dca8da8f8595bfafa25580f88c4()": "9",
-    "A8_ebe1c7b6a0324f26fa1203e423827d73()": "8",
-    "A8_a3ef9ab41d342fca7c6d3bf3b2e01ca2()": "7/8",
-    "A8_b68c76e55910e67faca8829b4700d2e1()": "7",
-    "A8_728a1685254b76fb0532dd2bd83fc670()": "6",
-    "A8_323b60c5b47a45c73f666867fd27b319()": "5/6",
-    "A8_59ed716391fbf46727ad091b93b1b507()": "5",
-    "A8_8e761f5120d8a81b268c721eb940f633()": "4/5",
-    "A8_4b0680d2e6545260c512c8424e7d0180()": "4",
-    "A8_31d055ac30224e9cb434b74b6f77c9fe()": "3/4",
-    "A8_3cd6d35aa8f427f02d106c1c40969227()": "3",
-    "A8_b69a020c915c748aba94ed6c86226541()": "2",
-    "A8_10d988d607dfa42c867b638336965a99()": "1",
-    "A8_217b0d256645bca88490d2f8257ffecd()": "0",
-    "A8_027540acd8eb24681172603ebf359a5c()": "B",
-    "A8_5e6e11644ad74bc7fa3554dc12d16d5d()": "B",
-    "A8_d02544d610dbfd7bb34cb85ff612365c()": "B"
-
-}
-currentAscentTypeMap = {
-    "/scorecard/images/56f871c6548ae32aaa78672c1996df7f.gif": "flash",
-    "/scorecard/images/979607b133a6622a1fc3443e564d9577.gif": "redpoint",
-    "/scorecard/images/e37046f07ac72e84f91d7f29f8455b58.gif": "onsite"
-}
-recommendMap = {
-    "/scorecard/images/UserRecommended_1.gif": True,
-    "/scorecard/images/UserRecommended_0.gif": False
-}
-# Headers from inspecting te desired request on 8a.nu directly
-headers = {
-    "Host": "www.8a.nu",
-    "Connection": "keep-alive",
-    "Cache-Control": "max-age=0",
-    "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-User": "?1",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
-    "Sec-Fetch-Site": "same-origin",
-    "Referer": "https://www.8a.nu/user/My8a.aspx",
-    "Accept-Encoding": "gzip, deflate, br",
-    "Accept-Language": "en-US,en;q=0.9"
-}
+# Prevent multiple of same log statement
+hideLog = set()
 
 
-def standardizeAreaName(name):
-    return re.sub("\s+", "_", name.strip().upper())
+def standardizeName(name):
+    return re.sub("[^A-Z0-9_]", "", re.sub("\s+", "_", name.strip().upper()))
+
+
+def parseHoverFxnToAreaMap(hoverFxnStr):
+    m1 = re.search("encodeURIComponent\('([^']+)", hoverFxnStr)
+    m2 = re.findall("\: (.*?(?=<br>|&lt;br&gt;))", m1.group(1))
+    divs = m2[1].split(',')
+    ret = {
+        "country": m2[0],
+        "div1": divs[1] if len(divs) > 1 else divs[0] if len(divs) > 0 else "n/a",
+        "div2": divs[0] if len(divs) > 0 else "n/a"
+    }
+    return ret
 
 
 def scrapeBoulderScorecare(a8URL):
@@ -122,9 +79,33 @@ def processAscent(htmlRow):
             # [4] - Area and sub area
             rawStr = tds[4].text
             rawArr = rawStr.split("/", 1)
-            ascent["area"] = standardizeAreaName(rawArr[0])
+            ascent["area"] = standardizeName(rawArr[0])
             if len(rawArr) == 2:
-                ascent["subArea"] = standardizeAreaName(rawArr[1])
+                ascent["subArea"] = standardizeName(rawArr[1])
+
+            # [4.1] - Country and State / Provence
+            areaMap = None
+            if ascent["area"] in areaMaps:
+                areaMap = areaMaps[ascent["area"]]
+            else:
+                rawA = tds[4].find('a')
+                if rawA:
+                    rawHoverFxn = rawA.attrs['onmouseover']
+                    areaMap = parseHoverFxnToAreaMap(rawHoverFxn)
+            # If we dont have an area map
+            if areaMap:
+                ascent["country"] = areaMap["country"]
+                if areaMap["div1"] in stateEquivalences:
+                    ascent["state"] = stateEquivalences[areaMap["div1"]]
+                else:
+                    ascent["state"] = areaMap["div1"]
+                ascent["city"] = areaMap["div2"]
+            else:
+                logkey = "COUNTRY:DNE:" + ascent["area"]
+                if logkey not in hideLog:
+                    print(
+                        "\t> [WARN - COUNTRY]: Crag [{}] does not have a valid area to Location Map so Country and State not found".format(ascent["area"]))
+                    hideLog.add(logkey)
 
             # [5] - Flags
             rawStr = tds[5].contents[0]
