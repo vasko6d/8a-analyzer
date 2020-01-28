@@ -6,7 +6,7 @@ import re
 import os.path
 import json
 import argparse
-from vars import currentGradeMap, currentAscentTypeMap, recommendMap, areaMaps, headers, ascentStartMarker, ascentEndMarker, stateEquivalences
+from vars import currentGradeMap, currentAscentTypeMap, recommendMap, areaMaps, headers, ascentStartMarker, ascentEndMarker, stateEquivalences, areaEquivalences
 
 # Helpful Google Links:
 # https://stackoverflow.com/questions/34573605/python-requests-get-returns-an-empty-string?rq=1
@@ -79,7 +79,10 @@ def processAscent(htmlRow):
             # [4] - Area and sub area
             rawStr = tds[4].text
             rawArr = rawStr.split("/", 1)
-            ascent["area"] = standardizeName(rawArr[0])
+            standName = standardizeName(rawArr[0])
+            if(standName in areaEquivalences):
+                standName = areaEquivalences[standName]
+            ascent["area"] = standName
             if len(rawArr) == 2:
                 ascent["subArea"] = standardizeName(rawArr[1])
 

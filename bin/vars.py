@@ -62,6 +62,11 @@ headers = {
 ascentStartMarker = "<!-- Ascents -->"
 ascentEndMarker = "</table>"
 
+# Known Equivalences
+areaEquivalences = {
+    "MOUNT_WOODSON": "MT_WOODSON"
+}
+
 # Manually maintained dictionary to get "country" + State
 areaMaps = {
     "MINERAL_KING": {"country": "United States", "div1": "CA", "div2": "Sequoia"},
