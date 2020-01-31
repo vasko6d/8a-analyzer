@@ -64,7 +64,8 @@ ascentEndMarker = "</table>"
 
 # Known Equivalences
 areaEquivalences = {
-    "MOUNT_WOODSON": "MT_WOODSON"
+    "MOUNT_WOODSON": "MT_WOODSON",
+    "THE_BRICKYARD": "BRICKYARD"
 }
 
 # Manually maintained dictionary to get "country" + State
