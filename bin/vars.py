@@ -29,7 +29,8 @@ currentGradeMap = {
     "A8_217b0d256645bca88490d2f8257ffecd()": "0",
     "A8_027540acd8eb24681172603ebf359a5c()": "B",
     "A8_5e6e11644ad74bc7fa3554dc12d16d5d()": "B",
-    "A8_d02544d610dbfd7bb34cb85ff612365c()": "B"
+    "A8_d02544d610dbfd7bb34cb85ff612365c()": "B",
+    "A8_f299aa555cd9014afd36ef6483f3aaf3()": "B"
 
 }
 currentAscentTypeMap = {
