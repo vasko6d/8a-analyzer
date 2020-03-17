@@ -9,6 +9,7 @@ for cmnd in \
     'python3 bin/8a-scraper.py --delimiter "json" --tmpFile nathaniel-cushing-murray.html --outFile nathaniel-cushing-murray.json "https://www.8a.nu/scorecard/chris-rush/boulders/?AscentClass=0&AscentListViewType=0&GID=7df805fe7444482ff3cfd8ecd38aaace"' \
     'python3 bin/8a-scraper.py --delimiter "json" --tmpFile drew-gomberg.html --outFile drew-gomberg.json "https://www.8a.nu/scorecard/chris-hoss/boulders/?AscentClass=0&AscentListViewType=0&GID=72bb5f75dad248435df3bf295f1c0964"' \
     'python3 bin/8a-scraper.py --delimiter "json" --tmpFile akhil-mauze.html --outFile akhil-mauze.json "https://www.8a.nu/scorecard/l-i-b/boulders/?AscentClass=0&AscentListViewType=0&GID=a2ee19aa7a3b855a7714b70831b73e7e"' \
+    'python3 bin/8a-scraper.py --delimiter "json" --tmpFile jacquie-nguyen.html --outFile jacquie-nguyen.json "https://www.8a.nu/scorecard/natalie-udelarms/boulders/?AscentClass=0&AscentListViewType=0&GID=8c5f988d656a9ca91f50e9d89daf67bf"' \
     'python3 bin/8a-scraper.py --delimiter "json" --tmpFile dustin-goldbarg.html --outFile dustin-goldbarg.json "https://www.8a.nu/scorecard/scooter-limb/boulders/?AscentClass=0&AscentListViewType=0&GID=0a6acd57ada827e54f1ba642ca09581c"' \
     'python3 bin/8a-scraper.py --delimiter "json" --tmpFile kody-shutt.html --outFile kody-shutt.json "https://www.8a.nu/scorecard/kody-shutt/boulders/?AscentClass=0&AscentListViewType=0&GID=70e6be69d70480662665cac4533a212b"'; \
     do

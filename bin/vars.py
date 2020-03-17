@@ -103,7 +103,8 @@ areaMaps = {
     "SASQUATCH": {"country": "United States", "div1": "WA", "div2": "Seattle"},
     "SERVICE_BOULDER": {"country": "United States", "div1": "AK", "div2": "Anchorage"},
     "ISLE_OF_SKYE": {"country": "United Kingdom", "div1": "Scotland", "div2": "Isle of Skye"},
-    "KHAJAGUDA": {"country": "India", "div1": "Telangana", "div2": "Khajaguda"}
+    "KHAJAGUDA": {"country": "India", "div1": "Telangana", "div2": "Khajaguda"},
+    "MOBIL_GAS_STATION": {"country": "United States", "div1": "California", "div2": "Lee Vining"}
 }
 stateEquivalences = {
     "CA": "California",
